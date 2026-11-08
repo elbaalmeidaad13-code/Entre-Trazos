@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#fff5f7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Entre trazos">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<title>Entre trazos ❤️</title>
+<style>
+:root{--ink:#352b3c;--muted:#8d8191;--pink:#ef9fb7;--rose:#ffe2eb;--lilac:#e9e0ff;--blue:#dff0ff;--cream:#fffaf3;--green:#dff3e8;--line:#f0e7ed;--shadow:0 12px 35px #65445d14}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#fff8f8,#f7f3ff 58%,#f4faff);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+button,input{font:inherit}button{border:0;cursor:pointer;color:inherit}.app{max-width:760px;margin:auto;min-height:100vh;padding:env(safe-area-inset-top) 16px calc(92px + env(safe-area-inset-bottom))}
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 2px 12px}.brand{font-weight:850;letter-spacing:-.7px;font-size:21px}.brand span{color:#d77f9c}.avatar{width:40px;height:40px;border-radius:50%;background:var(--lilac);display:grid;place-items:center;font-size:20px}
+h1{font-size:29px;line-height:1.1;letter-spacing:-1px;margin:10px 0 8px}h2{font-size:20px;margin:0 0 12px}p{color:var(--muted);line-height:1.45;margin:0}
+.hero{padding:22px;border-radius:27px;background:linear-gradient(135deg,#ffe3ec,#eee7ff 65%,#e5f4ff);box-shadow:var(--shadow);position:relative;overflow:hidden;margin:10px 0 22px}.hero:after{content:"♡";position:absolute;right:18px;bottom:-30px;font-size:130px;color:#fff8;transform:rotate(-15deg)}
+.hero p{max-width:75%;color:#746477}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:1.6px;font-weight:800;color:#a46d89}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.tile{min-height:130px;border-radius:22px;padding:16px;text-align:left;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:space-between;transition:transform .15s}.tile:active{transform:scale(.98)}.tile .emoji{font-size:27px}.tile strong{font-size:15px}.tile small{color:#83768a}.pink{background:#ffe6ee}.purple{background:#eee8ff}.blue{background:#e4f3ff}.yellow{background:#fff1d6}.green{background:#e3f4e9}.white{background:#fff}
+.section{margin:24px 0}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.muted{color:var(--muted);font-size:13px}
+.bottom{position:fixed;bottom:0;left:0;right:0;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#ffffffdf;backdrop-filter:blur(18px);border-top:1px solid #f1e8ee;display:flex;justify-content:center;z-index:5}.nav{width:min(760px,100%);display:flex;justify-content:space-around}.nav button{background:none;color:#9a8e9e;font-size:11px;display:grid;gap:4px;justify-items:center;padding:5px 10px}.nav button b{font-size:20px}.nav button.active{color:#c86f91;font-weight:800}
+.screen{display:none}.screen.active{display:block}.panel{background:#fff;border:1px solid #f4edf1;border-radius:22px;padding:16px;box-shadow:var(--shadow);margin:12px 0}
+.primary{background:#d985a3;color:white;border-radius:15px;padding:13px 18px;font-weight:750;box-shadow:0 7px 16px #d985a333}.secondary{background:#f7edf2;color:#80586a;border-radius:14px;padding:11px 14px;font-weight:700}.field{width:100%;border:1px solid var(--line);border-radius:13px;padding:13px;background:#fff;color:var(--ink);outline:none;margin:7px 0}.code{font-size:25px;letter-spacing:5px;font-weight:850;color:#b96e8b;text-align:center;padding:12px}
+.canvas-wrap{background:white;border-radius:18px;overflow:hidden;border:1px solid var(--line);touch-action:none}.canvas-wrap canvas{display:block;width:100%;height:auto;touch-action:none}.toolbar{display:flex;gap:8px;overflow-x:auto;padding:10px 0}.tool{padding:9px 12px;background:#fff;border:1px solid var(--line);border-radius:12px;white-space:nowrap;font-size:13px}.tool.selected{background:#fce4ec;border-color:#e6a2b8}.colors{display:flex;gap:9px;align-items:center;overflow:auto;padding:7px 0}.swatch{width:28px;height:28px;border-radius:50%;border:2px solid white;box-shadow:0 0 0 1px #ddd;flex:none}.swatch.selected{box-shadow:0 0 0 2px #b96e8b}
+.art-card{display:flex;gap:12px;align-items:center;background:white;border:1px solid var(--line);border-radius:18px;padding:10px;margin:9px 0}.thumb{width:76px;height:76px;border-radius:13px;background:linear-gradient(135deg,#fff0f4,#eeeaff);display:grid;place-items:center;font-size:30px;overflow:hidden}.thumb img{width:100%;height:100%;object-fit:cover}.art-card .meta{flex:1;min-width:0}.art-card strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.art-card small{color:var(--muted)}
+.template-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.template{background:white;border:1px solid var(--line);border-radius:18px;padding:12px;text-align:center}.template .pic{font-size:48px;padding:15px;background:#fff6f8;border-radius:13px;margin-bottom:8px}
+.world{display:grid;grid-template-columns:1fr 1fr;gap:12px}.world button{min-height:145px;border-radius:22px;padding:15px;text-align:left;display:flex;flex-direction:column;justify-content:space-between}.world .big{font-size:34px}
+.toast{position:fixed;left:50%;bottom:95px;transform:translateX(-50%);background:#382f3d;color:#fff;padding:11px 16px;border-radius:14px;font-size:13px;z-index:20;display:none;max-width:90%;text-align:center}
+.modal{position:fixed;inset:0;background:#2f253b66;display:none;align-items:center;justify-content:center;padding:20px;z-index:15}.modal.show{display:flex}.modal-box{background:#fff;border-radius:24px;padding:22px;width:min(420px,100%);box-shadow:var(--shadow)}
+@media(min-width:600px){.app{padding-left:24px;padding-right:24px}.hero{padding:30px}.tile{min-height:150px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand">entre <span>trazos</span> ♡</div><div class="avatar" id="myAvatar">🌷</div></header>
+
+<main>
+<section class="screen active" id="home">
+ <div class="hero"><div class="eyebrow">un pequeño mundo para dos</div><h1>Un dibujo puede<br>decir mucho. ❤️</h1><p id="welcome">Cread recuerdos, trazo a trazo.</p></div>
+ <div class="row"><h2>¿Qué hacemos hoy?</h2><span class="muted" id="pairStatus">Espacio personal</span></div>
+ <div class="grid">
+  <button class="tile pink" onclick="openStudio()"><span class="emoji">🖍️</span><strong>Dibujo libre</strong><small>Tu lienzo, tus reglas</small></button>
+  <button class="tile purple" onclick="showScreen('together')"><span class="emoji">🫶</span><strong>Dibujemos juntos</strong><small>Un mismo lienzo para dos</small></button>
+  <button class="tile blue" onclick="showScreen('templates')"><span class="emoji">🪻</span><strong>Pinta conmigo</strong><small>Plantillas para colorear</small></button>
+  <button class="tile yellow" onclick="showScreen('world')"><span class="emoji">🌍</span><strong>Nuestro mundo</strong><small>Explora y juega</small></button>
+ </div>
+ <div class="section"><div class="row"><h2>Para ti ❤️</h2><button class="secondary" onclick="showScreen('gallery')">Ver galería</button></div><div id="recent"><p class="muted">Todavía no hay dibujos. ¡El primero puede ser vuestro!</p></div></div>
+</section>
+
+<section class="screen" id="studio">
+ <div class="row"><div><div class="eyebrow">tu espacio creativo</div><h1>Dibujo libre</h1></div><button class="secondary" onclick="showScreen('home')">Cerrar</button></div>
+ <input class="field" id="artTitle" placeholder="Ponle un título a tu dibujo (opcional)">
+ <div class="toolbar" id="tools">
+  <button class="tool selected" data-tool="pen">✏️ Lápiz</button><button class="tool" data-tool="marker">🖊️ Rotulador</button><button class="tool" data-tool="brush">🖌️ Pincel</button><button class="tool" data-tool="eraser">⌫ Goma</button><button class="tool" data-tool="line">／ Línea</button><button class="tool" data-tool="circle">◯ Círculo</button><button class="tool" data-tool="rect">▢ Cuadrado</button><button class="tool" data-tool="heart">♡ Corazón</button>
+ </div>
+ <div class="colors" id="colors"></div>
+ <div class="row"><label class="muted">Grosor <input id="width" type="range" min="2" max="28" value="5"></label><label class="muted">Opacidad <input id="opacity" type="range" min="10" max="100" value="100"></label></div>
+ <div class="canvas-wrap"><canvas id="canvas" width="900" height="650"></canvas></div>
+ <div class="toolbar"><button class="tool" onclick="undo()">↶ Deshacer</button><button class="tool" onclick="redo()">↷ Rehacer</button><button class="tool" onclick="clearCanvas()">🗑️ Limpiar</button><button class="tool" onclick="saveDrawing()">♡ Guardar</button></div>
+ <button class="primary" style="width:100%" onclick="sendDrawing()">Enviar a mi persona ❤️</button>
+ <p class="muted" style="margin-top:9px">Se guarda una copia editable en este dispositivo. Conecta la nube para sincronizarla entre iPhone.</p>
+</section>
+
+<section class="screen" id="together">
+ <div class="eyebrow">un mismo lienzo</div><h1>Dibujemos juntos 🫶</h1>
+ <div class="panel"><p>Comparte un código de pareja para entrar en el mismo espacio. La sincronización entre móviles requiere configurar el backend incluido en el proyecto.</p><div class="code" id="pairCode">----</div><div class="row"><button class="primary" onclick="createPair()">Crear mi código</button><button class="secondary" onclick="copyCode()">Copiar</button></div><input class="field" id="joinCode" placeholder="Introduce el código de tu pareja"><button class="secondary" style="width:100%" onclick="joinPair()">Vincular con código</button><p class="muted" id="pairMsg" style="margin-top:10px">Modo local de demostración hasta conectar la nube.</p></div>
+ <button class="primary" style="width:100%" onclick="openStudio()">Abrir un lienzo</button>
+</section>
+
+<section class="screen" id="templates">
+ <div class="eyebrow">un poco de color</div><h1>Pinta conmigo 🪻</h1><p>Elige una idea y llévala al lienzo. Puedes colorear, dibujar encima y guardar tu versión.</p>
+ <div class="template-grid" id="templateGrid"></div>
+</section>
+
+<section class="screen" id="world">
+ <div class="eyebrow">explora a tu ritmo</div><h1>Nuestro mundo 🌍</h1><p>Pequeños rincones para inspiraros y crear recuerdos.</p>
+ <div class="world section">
+  <button class="pink" onclick="showScreen('templates')"><span class="big">🏝️</span><strong>Isla de los colores</strong><small>Paletas y dibujos</small></button>
+  <button class="green" onclick="showScreen('templates')"><span class="big">🌳</span><strong>Bosque animal</strong><small>Amigos del bosque</small></button>
+  <button class="yellow" onclick="showScreen('templates')"><span class="big">🌻</span><strong>Jardín de flores</strong><small>Un ramo de color</small></button>
+  <button class="blue" onclick="showScreen('games')"><span class="big">🌌</span><strong>Universo fantástico</strong><small>Retos creativos</small></button>
+ </div>
+ <div class="panel"><h2>Una sorpresa para hoy</h2><p id="dailyPrompt">Dibuja un lugar al que os gustaría viajar juntas.</p><button class="secondary" onclick="newPrompt()">Otra idea ✨</button></div>
+</section>
+
+<section class="screen" id="games">
+ <div class="eyebrow">jugar también es crear</div><h1>Minijuegos 🎲</h1>
+ <div class="panel"><h2>Adivina mi dibujo</h2><p>Una persona dibuja una palabra y la otra intenta adivinarla.</p><button class="primary" onclick="startGame('Adivina qué estoy dibujando')">Empezar reto</button></div>
+ <div class="panel"><h2>Dibujo por turnos</h2><p>Cada una añade una parte a una creación sorpresa.</p><button class="primary" onclick="startGame('Añade algo inesperado al dibujo')">Empezar reto</button></div>
+ <div class="panel"><h2>La misma idea</h2><p>Las dos dibujáis lo mismo sin ver el dibujo de la otra.</p><button class="primary" onclick="startGame('Dibujad un gato astronauta')">Empezar reto</button></div>
+ <p class="muted">Los retos se pueden jugar ya como ideas compartidas; el modo multijugador automático se activa al conectar el backend.</p>
+</section>
+
+<section class="screen" id="gallery">
+ <div class="eyebrow">vuestros pequeños recuerdos</div><h1>Nuestros recuerdos ♡</h1><div id="galleryList"></div>
+</section>
+
+<section class="screen" id="profile">
+ <div class="eyebrow">vuestro espacio</div><h1>Perfil y conexión</h1>
+ <div class="panel"><label class="muted">Tu nombre o apodo</label><input class="field" id="myName" placeholder="¿Cómo te llamas?"><button class="primary" onclick="saveProfile()">Guardar perfil</button></div>
+ <div class="panel"><h2>Conexión en la nube</h2><p>Para que los dos iPhone compartan dibujos incluso estando lejos, hay que crear un proyecto gratuito en Supabase y añadir sus claves al archivo <b>config.js</b>. En esta primera entrega, el guardado local sí funciona; la sincronización remota aún no está activada.</p><p class="muted" style="margin-top:8px">Consulta el archivo LEEME para activar la conexión segura.</p></div>
+ <div class="panel"><h2>Instalar en iPhone</h2><p>Abre la web publicada en Safari → botón Compartir → «Añadir a pantalla de inicio».</p></div>
+</section>
+</main>
+</div>
+<nav class="bottom"><div class="nav">
+<button class="active" data-screen="home" onclick="showScreen('home')"><b>⌂</b>Inicio</button>
+<button data-screen="gallery" onclick="showScreen('gallery')"><b>♡</b>Galería</button>
+<button data-screen="world" onclick="showScreen('world')"><b>🌍</b>Mundo</button>
+<button data-screen="games" onclick="showScreen('games')"><b>✧</b>Juegos</button>
+<button data-screen="profile" onclick="showScreen('profile')"><b>☻</b>Perfil</button>
+</div></nav>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="modal-box"><h2 id="modalTitle">¡Qué bonito!</h2><p id="modalText"></p><button class="primary" style="width:100%;margin-top:18px" onclick="closeModal()">Vale ❤️</button></div></div>
+<script src="config.js"></script><script src="app.js"></script>
+</body></html>

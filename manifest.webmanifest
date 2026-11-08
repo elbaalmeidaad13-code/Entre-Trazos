@@ -1,0 +1,17 @@
+{
+  "name": "Entre trazos ❤️",
+  "short_name": "Entre trazos",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fff5f7",
+  "theme_color": "#fff5f7",
+  "description": "Un pequeño mundo creativo para dos",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

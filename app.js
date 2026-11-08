@@ -1,0 +1,41 @@
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+let drawings=JSON.parse(localStorage.getItem('et_drawings')||'[]'), currentTool='pen', color='#332b3a', history=[], redoStack=[], drawing=false, start=null, snapshot=null;
+const canvas=$('#canvas'),ctx=canvas.getContext('2d');
+ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+const palette=['#332b3a','#e85d75','#f39ab5','#f7c6d5','#f6a23b','#ffd166','#83c99a','#3d9b83','#71b9e8','#6584d9','#9b7bd1','#c3a0e8','#ffffff','#8b5e45'];
+$('#colors').innerHTML=palette.map((c,i)=>`<button class="swatch ${i===0?'selected':''}" style="background:${c}" data-color="${c}" aria-label="Color ${c}"></button>`).join('');
+$$('.swatch').forEach(b=>b.onclick=()=>{$$('.swatch').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');color=b.dataset.color});
+$$('[data-tool]').forEach(b=>b.onclick=()=>{$$('[data-tool]').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');currentTool=b.dataset.tool});
+function showScreen(id){$$('.screen').forEach(s=>s.classList.toggle('active',s.id===id));$$('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.screen===id));if(id==='gallery')renderGallery();if(id==='home')renderRecent();window.scrollTo(0,0)}
+function toast(t){let el=$('#toast');el.textContent=t;el.style.display='block';setTimeout(()=>el.style.display='none',2400)}
+function modal(t,m){$('#modalTitle').textContent=t;$('#modalText').textContent=m;$('#modal').classList.add('show')}function closeModal(){$('#modal').classList.remove('show')}
+function point(e){let r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*canvas.width/r.width,y:(e.clientY-r.top)*canvas.height/r.height}}
+function saveHistory(){history.push(canvas.toDataURL());if(history.length>35)history.shift();redoStack=[]}
+canvas.addEventListener('pointerdown',e=>{e.preventDefault();canvas.setPointerCapture(e.pointerId);saveHistory();drawing=true;start=point(e);snapshot=ctx.getImageData(0,0,canvas.width,canvas.height);if(['pen','marker','brush','eraser'].includes(currentTool)){ctx.beginPath();ctx.moveTo(start.x,start.y)}});
+canvas.addEventListener('pointermove',e=>{if(!drawing)return;e.preventDefault();let p=point(e);ctx.putImageData(snapshot,0,0);ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle=currentTool==='eraser'?'#ffffff':color;ctx.globalAlpha=currentTool==='marker'?.28:Number($('#opacity').value)/100;ctx.lineWidth=Number($('#width').value)*(currentTool==='brush'?2:1);if(currentTool==='pen'||currentTool==='marker'||currentTool==='brush'||currentTool==='eraser'){ctx.beginPath();ctx.moveTo(start.x,start.y);ctx.lineTo(p.x,p.y);ctx.stroke()}else{ctx.lineWidth=Number($('#width').value);ctx.beginPath();if(currentTool==='line'){ctx.moveTo(start.x,start.y);ctx.lineTo(p.x,p.y)}if(currentTool==='circle'){ctx.ellipse((start.x+p.x)/2,(start.y+p.y)/2,Math.abs(p.x-start.x)/2,Math.abs(p.y-start.y)/2,0,0,Math.PI*2)}if(currentTool==='rect')ctx.rect(start.x,start.y,p.x-start.x,p.y-start.y);if(currentTool==='heart'){let x=(start.x+p.x)/2,y=(start.y+p.y)/2,w=p.x-start.x,h=p.y-start.y;ctx.moveTo(x,y+h*.35);ctx.bezierCurveTo(x-w*.8,y-h*.2,x-w*.35,y-h*.65,x,y-h*.2);ctx.bezierCurveTo(x+w*.35,y-h*.65,x+w*.8,y-h*.2,x,y+h*.35)}ctx.stroke()}ctx.globalAlpha=1});
+canvas.addEventListener('pointerup',()=>{if(drawing){drawing=false;ctx.globalAlpha=1}});
+function restore(data){let im=new Image();im.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(im,0,0)};im.src=data}
+function undo(){if(!history.length)return;redoStack.push(canvas.toDataURL());restore(history.pop())}function redo(){if(!redoStack.length)return;history.push(canvas.toDataURL());restore(redoStack.pop())}
+function clearCanvas(){if(confirm('¿Borramos todo el lienzo?')){saveHistory();ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height)}}
+function openStudio(){showScreen('studio')}
+function storeDrawing(send=false){let data=canvas.toDataURL('image/png');let item={id:Date.now(),title:$('#artTitle').value.trim()||'Un dibujo bonito',date:new Date().toISOString(),image:data,sent:send,author:localStorage.getItem('et_name')||'Yo'};drawings.unshift(item);localStorage.setItem('et_drawings',JSON.stringify(drawings));renderRecent();renderGallery();return item}
+function saveDrawing(){storeDrawing(false);toast('Dibujo guardado en este iPhone ♡')}
+function sendDrawing(){storeDrawing(true);modal('Dibujo preparado ❤️','Se ha guardado en tu galería. Para que llegue automáticamente al otro iPhone, activa la conexión Supabase siguiendo LEEME.')}
+function renderRecent(){let box=$('#recent');box.innerHTML=drawings.length?drawings.slice(0,2).map(card).join(''):'<p class="muted">Todavía no hay dibujos. ¡El primero puede ser vuestro!</p>'}
+function card(d){return `<div class="art-card"><div class="thumb"><img src="${d.image}"></div><div class="meta"><strong>${escapeHtml(d.title)}</strong><small>${new Date(d.date).toLocaleDateString('es-ES')} · ${d.sent?'Para ti ❤️':'Guardado'}</small></div><button class="secondary" onclick="editDrawing(${d.id})">Editar</button></div>`}
+function renderGallery(){$('#galleryList').innerHTML=drawings.length?drawings.map(card).join(''):'<div class="panel"><p>Aún no hay recuerdos guardados. Empezad con un dibujo libre.</p></div>'}
+function editDrawing(id){let d=drawings.find(x=>x.id===id);if(!d)return;restore(d.image);$('#artTitle').value=d.title;showScreen('studio')}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+const templates=[['🐱','Gatito soñador'],['🌷','Ramo de flores'],['🦋','Mariposa'],['🍓','Fresas dulces'],['🌙','Luna y estrellas'],['🏡','Casita acogedora'],['🐢','Tortuguita'],['❤️','Corazón para dos']];
+$('#templateGrid').innerHTML=templates.map((t,i)=>`<button class="template" onclick="useTemplate(${i})"><div class="pic">${t[0]}</div><strong>${t[1]}</strong><div class="muted">Tocar para crear</div></button>`).join('');
+function useTemplate(i){openStudio();$('#artTitle').value=templates[i][1];ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#f8e5ec';ctx.font='190px serif';ctx.textAlign='center';ctx.fillText(templates[i][0],450,390);ctx.strokeStyle='#333';ctx.lineWidth=3;ctx.strokeRect(170,100,560,450);toast('Plantilla lista para personalizar')}
+function createPair(){let c=Math.random().toString(36).slice(2,8).toUpperCase();localStorage.setItem('et_pair',c);$('#pairCode').textContent=c;$('#pairMsg').textContent='Código creado. Compártelo con tu pareja; para vincular por Internet configura Supabase.';$('#pairStatus').textContent='Código '+c}
+function copyCode(){let c=localStorage.getItem('et_pair');if(!c)return toast('Primero crea tu código');navigator.clipboard?.writeText(c).then(()=>toast('Código copiado')).catch(()=>toast('Tu código es '+c))}
+function joinPair(){let c=$('#joinCode').value.trim().toUpperCase();if(c.length<4)return toast('Introduce un código válido');localStorage.setItem('et_pair',c);$('#pairStatus').textContent='Código '+c;$('#pairMsg').textContent='Código guardado en este dispositivo. La vinculación remota requiere backend.';toast('Código introducido')}
+function saveProfile(){let n=$('#myName').value.trim();localStorage.setItem('et_name',n||'Yo');$('#welcome').textContent=`Hola, ${n||'creativa'}. Hoy puede nacer un recuerdo precioso.`;toast('Perfil guardado')}
+function startGame(t){modal('Reto para dos ✨',t+'. ¡Cuando lo tengáis, guardaos los dibujos en la galería!')}
+const prompts=['Dibuja un lugar al que os gustaría viajar juntas.','Haz un retrato de la otra usando solo cinco colores.','Dibuja vuestro plan perfecto para un domingo.','Inventad una mascota que solo exista en vuestro mundo.','Dibuja un recuerdo bonito sin escribir palabras.'];function newPrompt(){$('#dailyPrompt').textContent=prompts[Math.floor(Math.random()*prompts.length)]}
+if(localStorage.getItem('et_name'))$('#myName').value=localStorage.getItem('et_name');
+if(localStorage.getItem('et_pair')){$('#pairCode').textContent=localStorage.getItem('et_pair');$('#pairStatus').textContent='Código '+localStorage.getItem('et_pair')}
+renderRecent();
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
